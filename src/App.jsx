@@ -1,11 +1,15 @@
+// src/App.jsx - PART 1 of 2
+// Delete your current App.jsx content and paste BOTH parts
+
 import React, { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
-import { Play, Loader, CheckCircle, Network, Menu, LogOut, Crown, Zap, Users, TrendingUp, Send, MessageSquare, X } from 'lucide-react'
+import { Network, Zap, Users, TrendingUp, Moon, Sun, Menu, LogOut, Crown, Send, MessageSquare, X, Sparkles, Loader, CheckCircle } from 'lucide-react'
 
-export default function App() {
+export default function SynergyAI() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [view, setView] = useState('landing')
+  const [darkMode, setDarkMode] = useState(true)
+  const [view, setView] = useState('home')
   const [task, setTask] = useState('')
   const [executing, setExecuting] = useState(false)
   const [currentChat, setCurrentChat] = useState(null)
@@ -81,7 +85,7 @@ export default function App() {
   const signOut = async () => {
     await supabase.auth.signOut()
     setUser(null)
-    setView('landing')
+    setView('home')
     setChatHistory([])
     setCurrentChat(null)
   }
@@ -150,14 +154,6 @@ export default function App() {
 
     try {
       // TODO: Replace with your Make.com webhook URL
-      // const response = await fetch('YOUR_MAKE_COM_WEBHOOK_URL', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ task })
-      // })
-      // const data = await response.json()
-      
-      // Simulated response for now:
       const aiMessage = {
         role: 'assistant',
         content: 'This is a simulated response. Connect your Make.com webhook to enable real AI orchestration.',
@@ -200,151 +196,256 @@ export default function App() {
     alert('Thank you for your feedback!')
   }
 
+  const bgColor = darkMode ? 'bg-slate-900' : 'bg-slate-50'
+  const textColor = darkMode ? 'text-slate-100' : 'text-slate-900'
+  const cardBg = darkMode ? 'bg-slate-800' : 'bg-white'
+  const borderColor = darkMode ? 'border-slate-700' : 'border-slate-200'
+  const mutedText = darkMode ? 'text-slate-400' : 'text-slate-600'
+
+  const NavBar = () => (
+    <nav className={`${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b sticky top-0 z-50 backdrop-blur-sm bg-opacity-90`}>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('home')}>
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+            <Network className="w-6 h-6 text-white" />
+          </div>
+          <span className={`text-xl font-bold ${textColor}`}>Synergy AI</span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-2 rounded-lg ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'} transition-colors`}
+          >
+            {darkMode ? <Sun className="w-5 h-5 text-slate-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
+          </button>
+
+          {!user ? (
+            <>
+              <button
+                onClick={signInWithGoogle}
+                className={`px-4 py-2 rounded-lg ${darkMode ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-100'} transition-colors font-medium hidden sm:block`}
+              >
+                Sign In
+              </button>
+              <button
+                onClick={signInWithGoogle}
+                className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors font-semibold"
+              >
+                Get Started
+              </button>
+            </>
+          ) : (
+            <>
+              {!userStats.isPremium && (
+                <button
+                  onClick={() => setView('upgrade')}
+                  className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 rounded-lg hover:from-yellow-500 hover:to-yellow-600 transition-colors font-semibold flex items-center gap-2"
+                >
+                  <Crown className="w-4 h-4" />
+                  <span className="hidden sm:inline">Upgrade</span>
+                </button>
+              )}
+              <button
+                onClick={() => setView('app')}
+                className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors font-semibold"
+              >
+                App
+              </button>
+              <button onClick={signOut} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'} transition-colors`}>
+                <LogOut className={`w-5 h-5 ${mutedText}`} />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </nav>
+  )
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader className="w-8 h-8 animate-spin text-blue-600" />
+      <div className={`min-h-screen ${bgColor} flex items-center justify-center`}>
+        <Loader className="w-8 h-8 animate-spin text-blue-500" />
       </div>
     )
   }
 
-  // Landing Page
-  if (view === 'landing' && !user) {
+  if (view === 'home') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className={`min-h-screen ${bgColor} transition-colors`}>
+        <NavBar />
+        
+        <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 bg-opacity-10 rounded-full mb-8">
+            <Sparkles className="w-4 h-4 text-blue-400" />
+            <span className="text-blue-400 text-sm font-medium">AI Orchestration Platform</span>
+          </div>
+          
+          <h1 className={`text-5xl md:text-6xl font-bold ${textColor} mb-6 leading-tight`}>
+            Coordinate Multiple AI Agents<br />
+            <span className="bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
+              for 10x Better Results
+            </span>
+          </h1>
+          
+          <p className={`text-xl ${mutedText} mb-12 max-w-3xl mx-auto leading-relaxed`}>
+            Stop using one AI for everything. Synergy orchestrates multiple specialist agents 
+            working together in parallel to deliver professional-grade results in minutes.
+          </p>
+
+          <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
+            <button
+              onClick={() => user ? setView('app') : signInWithGoogle()}
+              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              Start Free Today
+            </button>
+            <button
+              onClick={() => setView('upgrade')}
+              className={`px-8 py-4 ${cardBg} ${textColor} rounded-lg border ${borderColor} hover:border-blue-500 transition-colors font-semibold text-lg`}
+            >
+              View Pricing
+            </button>
+          </div>
+          
+          <p className={`text-sm ${mutedText}`}>
+            Free tier: 1 task • 5 chats • No credit card required
+          </p>
+        </div>
+
         <div className="max-w-6xl mx-auto px-6 py-16">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Network className="w-12 h-12 text-blue-600" />
-              <h1 className="text-5xl font-bold text-slate-900">Synergy AI</h1>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className={`${cardBg} p-8 rounded-2xl border ${borderColor} hover:border-blue-500 transition-all`}>
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-6">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h3 className={`text-2xl font-bold ${textColor} mb-4`}>10x Faster</h3>
+              <p className={mutedText}>
+                Multiple AI agents work in parallel. Complex tasks that take hours with traditional AI are completed in minutes.
+              </p>
             </div>
-            <p className="text-2xl text-slate-700 mb-8">
-              Coordinate Multiple AI Agents for 10x Better Results
-            </p>
-            <p className="text-lg text-slate-600 mb-12 max-w-2xl mx-auto">
-              Stop using one AI for everything. Synergy orchestrates multiple specialist agents 
-              working together to deliver professional-grade results in minutes.
+
+            <div className={`${cardBg} p-8 rounded-2xl border ${borderColor} hover:border-purple-500 transition-all`}>
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-6">
+                <Users className="w-6 h-6 text-white" />
+              </div>
+              <h3 className={`text-2xl font-bold ${textColor} mb-4`}>Expert Quality</h3>
+              <p className={mutedText}>
+                Specialized agents for research, analysis, strategy, writing, and more. Professional results every time.
+              </p>
+            </div>
+
+            <div className={`${cardBg} p-8 rounded-2xl border ${borderColor} hover:border-green-500 transition-all`}>
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-6">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className={`text-2xl font-bold ${textColor} mb-4`}>Better Results</h3>
+              <p className={mutedText}>
+                Coordination produces insights no single AI can match. Like having a team of experts.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <h2 className={`text-4xl font-bold ${textColor} text-center mb-16`}>How It Works</h2>
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { num: '1', title: 'Describe Your Task', desc: 'Tell Synergy what you need - a marketing plan, research report, or any complex project.' },
+              { num: '2', title: 'AI Orchestration', desc: 'Our coordinator AI deploys specialist agents to work in parallel on each component.' },
+              { num: '3', title: 'Get Results', desc: 'Receive a comprehensive output combining insights from all agents into one deliverable.' }
+            ].map((step, i) => (
+              <div key={i} className="text-center">
+                <div className={`w-16 h-16 ${cardBg} border-2 ${i === 0 ? 'border-blue-500' : i === 1 ? 'border-purple-500' : 'border-green-500'} rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-bold ${i === 0 ? 'text-blue-500' : i === 1 ? 'text-purple-500' : 'text-green-500'}`}>
+                  {step.num}
+                </div>
+                <h3 className={`text-xl font-bold ${textColor} mb-3`}>{step.title}</h3>
+                <p className={mutedText}>{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+          <div className={`${cardBg} rounded-3xl border ${borderColor} p-12`}>
+            <h2 className={`text-4xl font-bold ${textColor} mb-6`}>
+              Ready to 10x Your Productivity?
+            </h2>
+            <p className={`text-xl ${mutedText} mb-8`}>
+              Join thousands using AI orchestration to get better results faster.
             </p>
             <button
-              onClick={signInWithGoogle}
-              className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg inline-flex items-center gap-3"
+              onClick={() => user ? setView('app') : signInWithGoogle()}
+              className="px-10 py-5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all font-bold text-xl shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              Sign in with Google
+              Start Free - No Credit Card
             </button>
-            <p className="text-sm text-slate-500 mt-4">1 free task • 5 chats included</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
-              <Zap className="w-12 h-12 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-3">10x Faster</h3>
-              <p className="text-slate-600">Multiple AI agents work in parallel. What takes hours with one AI takes minutes with Synergy.</p>
-            </div>
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
-              <Users className="w-12 h-12 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Expert Quality</h3>
-              <p className="text-slate-600">Specialized agents for research, analysis, strategy, and more. Professional results every time.</p>
-            </div>
-            <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
-              <TrendingUp className="w-12 h-12 text-blue-600 mb-4" />
-              <h3 className="text-xl font-semibold mb-3">Better Results</h3>
-              <p className="text-slate-600">Coordination produces insights no single AI can match. It's like having a team of experts.</p>
-            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  // Upgrade Page
   if (view === 'upgrade') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-        <div className="max-w-4xl mx-auto px-6 py-16">
-          <button
-            onClick={() => setView('app')}
-            className="mb-8 text-slate-600 hover:text-slate-900 flex items-center gap-2"
-          >
-            ← Back to App
-          </button>
-
-          <div className="text-center mb-12">
-            <Crown className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold mb-4">Upgrade to Premium</h1>
-            <p className="text-xl text-slate-600">Unlock the full power of AI orchestration</p>
+      <div className={`min-h-screen ${bgColor} transition-colors`}>
+        <NavBar />
+        
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <div className="text-center mb-16">
+            <Crown className="w-20 h-20 text-yellow-500 mx-auto mb-6" />
+            <h1 className={`text-5xl font-bold ${textColor} mb-4`}>Upgrade to Premium</h1>
+            <p className={`text-xl ${mutedText}`}>Unlock unlimited AI orchestration power</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-white rounded-xl shadow-lg border-2 border-slate-200 p-8">
-              <h3 className="text-2xl font-bold mb-2">Monthly</h3>
-              <div className="text-4xl font-bold text-blue-600 mb-6">
-                $15<span className="text-lg text-slate-600">/month</span>
+          <div className="grid md:grid-cols-2 gap-8 mb-16">
+            <div className={`${cardBg} border ${borderColor} rounded-2xl p-8 hover:border-blue-500 transition-all`}>
+              <h3 className={`text-2xl font-bold ${textColor} mb-2`}>Monthly</h3>
+              <div className="mb-6">
+                <span className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">$15</span>
+                <span className={mutedText}>/month</span>
               </div>
-              <button className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold mb-6">
+              <button className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all font-bold text-lg mb-6">
                 Start 7-Day Free Trial
               </button>
+              <p className={`text-sm ${mutedText} text-center`}>Cancel anytime</p>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg border-2 border-blue-400 p-8 text-white relative">
-              <div className="absolute top-4 right-4 bg-yellow-400 text-blue-900 px-3 py-1 rounded-full text-sm font-bold">
+            <div className="bg-gradient-to-br from-blue-600 to-purple-700 rounded-2xl p-8 relative border-2 border-yellow-400 shadow-2xl">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-slate-900 px-6 py-2 rounded-full text-sm font-bold">
                 BEST VALUE
               </div>
-              <h3 className="text-2xl font-bold mb-2">Yearly</h3>
-              <div className="text-4xl font-bold mb-2">
-                $100<span className="text-lg opacity-90">/year</span>
+              <h3 className="text-2xl font-bold text-white mb-2">Yearly</h3>
+              <div className="mb-2">
+                <span className="text-5xl font-bold text-white">$100</span>
+                <span className="text-blue-200">/year</span>
               </div>
-              <div className="text-sm opacity-90 mb-6">Save $80 vs monthly</div>
-              <button className="w-full py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-semibold mb-6">
+              <p className="text-blue-200 mb-6">Save $80 vs monthly</p>
+              <button className="w-full py-4 bg-white text-purple-600 rounded-xl hover:bg-blue-50 transition-all font-bold text-lg mb-6">
                 Start 7-Day Free Trial
               </button>
+              <p className="text-sm text-blue-200 text-center">2 months free</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h3 className="text-2xl font-bold mb-6 text-center">Premium Benefits</h3>
+          <div className={`${cardBg} border ${borderColor} rounded-2xl p-10`}>
+            <h3 className={`text-3xl font-bold ${textColor} mb-8 text-center`}>Everything in Premium</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold mb-1">Unlimited Tasks</div>
-                  <div className="text-sm text-slate-600">Create as many orchestration tasks as you need</div>
+              {[
+                { title: 'Unlimited Tasks', desc: 'Create as many orchestration tasks as you need' },
+                { title: 'Unlimited Chats', desc: 'No limit on follow-up conversations per task' },
+                { title: 'Advanced Agents', desc: 'Access specialized AI agents for complex work' },
+                { title: 'Faster Processing', desc: 'Priority queue for faster results' },
+                { title: 'Priority Support', desc: 'Get help faster with dedicated support' },
+                { title: '7-Day Free Trial', desc: 'Try all features risk-free' }
+              ].map((feature, i) => (
+                <div key={i} className="flex items-start gap-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
+                  <div>
+                    <div className={`font-semibold ${textColor} mb-1`}>{feature.title}</div>
+                    <div className={`text-sm ${mutedText}`}>{feature.desc}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold mb-1">Unlimited Chats</div>
-                  <div className="text-sm text-slate-600">No limit on follow-up conversations per task</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold mb-1">Advanced Agents</div>
-                  <div className="text-sm text-slate-600">Access to specialized AI agents for complex tasks</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold mb-1">Faster Processing</div>
-                  <div className="text-sm text-slate-600">Priority queue for faster results</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold mb-1">Priority Support</div>
-                  <div className="text-sm text-slate-600">Get help faster with dedicated support</div>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold mb-1">7-Day Free Trial</div>
-                  <div className="text-sm text-slate-600">Try all features risk-free for a week</div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -352,47 +453,54 @@ export default function App() {
     )
   }
 
-  // Main App
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+    <div className={`h-screen flex flex-col ${bgColor} transition-colors`}>
+      <div className={`${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'} border-b px-6 py-4 flex items-center justify-between`}>
         <div className="flex items-center gap-4">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
-            <Menu className="w-6 h-6 text-slate-600" />
+            <Menu className={`w-6 h-6 ${mutedText}`} />
           </button>
           <div className="flex items-center gap-2">
-            <Network className="w-6 h-6 text-blue-600" />
-            <h1 className="text-xl font-bold text-slate-900">Synergy AI</h1>
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+              <Network className="w-5 h-5 text-white" />
+            </div>
+            <h1 className={`text-xl font-bold ${textColor}`}>Synergy AI</h1>
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className={`p-2 rounded-lg ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'} transition-colors`}
+          >
+            {darkMode ? <Sun className="w-5 h-5 text-slate-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
+          </button>
           {!userStats.isPremium && (
             <button
               onClick={() => setView('upgrade')}
               className="px-4 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 rounded-lg hover:from-yellow-500 hover:to-yellow-600 transition-colors font-semibold flex items-center gap-2"
             >
               <Crown className="w-4 h-4" />
-              Upgrade
+              <span className="hidden sm:inline">Upgrade</span>
             </button>
           )}
-          <button onClick={signOut} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
-            <LogOut className="w-5 h-5 text-slate-600" />
+          <button onClick={signOut} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'} transition-colors`}>
+            <LogOut className={`w-5 h-5 ${mutedText}`} />
           </button>
         </div>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
-        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-white border-r border-slate-200 transition-all overflow-hidden`}>
+        <div className={`${sidebarOpen ? 'w-64' : 'w-0'} ${cardBg} border-r ${borderColor} transition-all overflow-hidden`}>
           <div className="p-4">
             <button
               onClick={createNewTask}
-              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold mb-4"
+              className="w-full px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors font-semibold mb-4"
             >
               + New Task
             </button>
-            <div className="text-xs text-slate-500 mb-2">
+            <div className={`text-xs ${mutedText} mb-2`}>
               {userStats.isPremium ? (
-                <span className="text-green-600 font-semibold">✓ Premium</span>
+                <span className="text-green-500 font-semibold">✓ Premium</span>
               ) : (
                 <span>Free: {userStats.tasks}/1 tasks</span>
               )}
@@ -403,12 +511,14 @@ export default function App() {
               <button
                 key={chat.id}
                 onClick={() => selectChat(chat)}
-                className={`w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors border-l-2 ${
-                  currentChat?.id === chat.id ? 'border-blue-600 bg-slate-50' : 'border-transparent'
+                className={`w-full text-left px-4 py-3 transition-colors border-l-2 ${
+                  currentChat?.id === chat.id 
+                    ? `border-blue-500 ${darkMode ? 'bg-slate-700' : 'bg-slate-100'}` 
+                    : `border-transparent ${darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`
                 }`}
               >
-                <div className="font-medium text-sm text-slate-900 truncate">{chat.title}</div>
-                <div className="text-xs text-slate-500 mt-1">
+                <div className={`font-medium text-sm ${textColor} truncate`}>{chat.title}</div>
+                <div className={`text-xs ${mutedText} mt-1`}>
                   {chat.chat_count || 0} {userStats.isPremium ? '' : '/ 5'} chats
                 </div>
               </button>
@@ -420,12 +530,14 @@ export default function App() {
           {!currentChat ? (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
-                <Network className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                <h2 className="text-2xl font-semibold text-slate-700 mb-2">Welcome to Synergy AI</h2>
-                <p className="text-slate-500 mb-6">Create a new task to get started</p>
+                <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl inline-block mb-6">
+                  <Network className="w-16 h-16 text-white" />
+                </div>
+                <h2 className={`text-2xl font-semibold ${textColor} mb-2`}>Welcome to Synergy AI</h2>
+                <p className={`${mutedText} mb-6`}>Create a new task to get started</p>
                 <button
                   onClick={createNewTask}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors font-semibold"
                 >
                   Create Your First Task
                 </button>
@@ -438,8 +550,8 @@ export default function App() {
                   <div key={i} className={`mb-6 ${msg.role === 'user' ? 'text-right' : ''}`}>
                     <div className={`inline-block max-w-3xl p-4 rounded-lg ${
                       msg.role === 'user' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-white border border-slate-200 text-slate-800'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' 
+                        : `${cardBg} border ${borderColor} ${textColor}`
                     }`}>
                       <div className="whitespace-pre-line">{msg.content}</div>
                     </div>
@@ -447,14 +559,14 @@ export default function App() {
                 ))}
                 {executing && (
                   <div className="mb-6">
-                    <div className="inline-block bg-white border border-slate-200 p-4 rounded-lg">
-                      <Loader className="w-5 h-5 animate-spin text-blue-600" />
+                    <div className={`inline-block ${cardBg} border ${borderColor} p-4 rounded-lg`}>
+                      <Loader className="w-5 h-5 animate-spin text-blue-500" />
                     </div>
                   </div>
                 )}
               </div>
 
-              <div className="border-t border-slate-200 bg-white p-4">
+              <div className={`border-t ${borderColor} ${cardBg} p-4`}>
                 <div className="max-w-4xl mx-auto flex gap-3">
                   <input
                     type="text"
@@ -462,13 +574,13 @@ export default function App() {
                     onChange={(e) => setTask(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && !executing && executeTask()}
                     placeholder="Type your message..."
-                    className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`flex-1 px-4 py-3 ${cardBg} border ${borderColor} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${textColor}`}
                     disabled={executing}
                   />
                   <button
                     onClick={executeTask}
                     disabled={executing || !task.trim()}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors font-semibold"
+                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold"
                   >
                     <Send className="w-5 h-5" />
                   </button>
@@ -480,23 +592,23 @@ export default function App() {
       </div>
 
       {feedbackOpen ? (
-        <div className="fixed bottom-4 right-4 w-80 bg-white rounded-lg shadow-xl border border-slate-200 p-4">
+        <div className={`fixed bottom-4 right-4 w-80 ${cardBg} rounded-lg shadow-xl border ${borderColor} p-4`}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold">Send Feedback</h3>
+            <h3 className={`font-semibold ${textColor}`}>Send Feedback</h3>
             <button onClick={() => setFeedbackOpen(false)}>
-              <X className="w-5 h-5 text-slate-400" />
+              <X className={`w-5 h-5 ${mutedText}`} />
             </button>
           </div>
           <textarea
             value={feedbackText}
             onChange={(e) => setFeedbackText(e.target.value)}
             placeholder="What can we improve?"
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg resize-none mb-3"
+            className={`w-full px-3 py-2 border ${borderColor} ${cardBg} ${textColor} rounded-lg resize-none mb-3`}
             rows="4"
           />
           <button
             onClick={submitFeedback}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            className="w-full py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-colors font-semibold"
           >
             Submit
           </button>
@@ -504,7 +616,7 @@ export default function App() {
       ) : (
         <button
           onClick={() => setFeedbackOpen(true)}
-          className="fixed bottom-4 right-4 p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+          className="fixed bottom-4 right-4 p-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-purple-700 transition-colors"
         >
           <MessageSquare className="w-6 h-6" />
         </button>
