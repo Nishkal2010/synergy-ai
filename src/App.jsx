@@ -154,11 +154,19 @@ export default function SynergyAI() {
 
     try {
       // TODO: Replace with your Make.com webhook URL
-      const aiMessage = {
-        role: 'assistant',
-        content: 'This is a simulated response. Connect your Make.com webhook to enable real AI orchestration.',
-        timestamp: new Date().toISOString()
-      }
+      const webhookResponse = await fetch('https://hook.us2.make.com/7m7ma9mr29yke9sf2d9m2sqej8pk723y', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ task })
+})
+
+const webhookData = await webhookResponse.json()
+
+const aiMessage = {
+  role: 'assistant',
+  content: webhookData.response || 'AI orchestration complete!',
+  timestamp: new Date().toISOString()
+}
 
       const updatedMessages = [...newMessages, aiMessage]
       setMessages(updatedMessages)
