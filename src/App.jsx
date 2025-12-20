@@ -1,4 +1,4 @@
-// src/App.jsx - PART 1 of 2
+d// src/App.jsx - PART 1 of 2
 // Delete your current App.jsx content and paste BOTH parts
 
 import React, { useState, useEffect } from 'react'
